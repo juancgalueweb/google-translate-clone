@@ -23,3 +23,30 @@ export enum SectionType {
   From = 'from',
   To = 'to'
 }
+
+export interface TextAreaProps {
+  type: SectionType
+  loading?: boolean
+  onChange: (value: string) => void
+  value: string
+}
+
+export type PlaceholderTypes = Pick<TextAreaProps, 'type' | 'loading'>
+
+export type LanguageSelectorProps =
+  | {
+      type: SectionType.From
+      value: FromLanguage
+      onChange: (language: FromLanguage) => void
+    }
+  | {
+      type: SectionType.To
+      value: Language
+      onChange: (language: Language) => void
+    }
+
+export interface TranslationProps {
+  fromLanguage: FromLanguage
+  toLanguage: Language
+  text: string
+}

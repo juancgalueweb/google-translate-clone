@@ -1,15 +1,10 @@
 import React, { type FC } from 'react'
 import { Form } from 'react-bootstrap'
-import { SectionType } from '../types.d'
-
-interface Props {
-  type: SectionType
-  loading?: boolean
-  onChange: (value: string) => void
-  value: string
-}
-
-type PlaceholderTypes = Pick<Props, 'type' | 'loading'>
+import {
+  SectionType,
+  type PlaceholderTypes,
+  type TextAreaProps
+} from '../types.d'
 
 const commonStyles = { border: 0, height: '200px', resize: 'none' as const }
 
@@ -19,7 +14,12 @@ const getPlaceholder = ({ type, loading }: PlaceholderTypes) => {
   return 'Traducción'
 }
 
-export const TextArea: FC<Props> = ({ loading, type, value, onChange }) => {
+export const TextArea: FC<TextAreaProps> = ({
+  loading,
+  type,
+  value,
+  onChange
+}) => {
   const styles =
     type === SectionType.From
       ? commonStyles
@@ -37,6 +37,7 @@ export const TextArea: FC<Props> = ({ loading, type, value, onChange }) => {
       placeholder={getPlaceholder({ type, loading })}
       value={value}
       onChange={handleChange}
+      disabled={type === SectionType.To}
     />
   )
 }
