@@ -1,5 +1,29 @@
-/* #root {
-  max-width: 1200px;
+#root {
   margin: 0 auto;
   padding: 2rem;
-} */
+}
+
+.clipboard-container {
+  position: relative;
+}
+
+.icons {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+}
+
+.clipboard-svg {
+  transform: scale(1, -1);
+  opacity: 0.5;
+}
+
+.speaker-svg {
+  opacity: 0.5;
+}
+
+.clipboard-svg:hover,
+.speaker-svg:hover {
+  opacity: 1;
+}

@@ -6,7 +6,11 @@ import {
   type TextAreaProps
 } from '../types.d'
 
-const commonStyles = { border: 0, height: '200px', resize: 'none' as const }
+const commonStyles = {
+  border: 0,
+  height: '200px',
+  resize: 'none' as const
+}
 
 const getPlaceholder = ({ type, loading }: PlaceholderTypes) => {
   if (type === SectionType.From) return 'Introducir texto'
@@ -38,6 +42,7 @@ export const TextArea: FC<TextAreaProps> = ({
       value={value}
       onChange={handleChange}
       disabled={type === SectionType.To}
+      className='shadow-sm'
     />
   )
 }
