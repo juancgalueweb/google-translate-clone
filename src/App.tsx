@@ -1,6 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useEffect } from 'react'
 import { Button, Col, Container, Row, Stack } from 'react-bootstrap'
+import { Slide, ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.min.css'
 import './App.css'
 import { ArrowsIcon, ClipboardIcon, SpeakerIcon } from './components/Icons'
 import { LanguageSelector } from './components/LanguageSelector'
@@ -30,9 +32,21 @@ function App() {
 
   const handleClipboard = () => {
     navigator.clipboard.writeText(result).catch(() => {})
+    toast('Traducción copiada', {
+      position: 'bottom-left',
+      autoClose: 2000,
+      pauseOnHover: false,
+      hideProgressBar: true,
+      theme: 'dark',
+      closeOnClick: true,
+      draggable: true,
+      type: 'default',
+      closeButton: false,
+      transition: Slide
+    })
   }
 
-  const handleSpeak = () => {
+  const handleSpeakTo = () => {
     const utterance = new SpeechSynthesisUtterance(result)
     utterance.lang = LANGUAGES_FOR_VOICES[toLanguage]
     speechSynthesis.speak(utterance)
@@ -52,62 +66,66 @@ function App() {
   }, [debouncedFromText, fromLanguage, toLanguage])
 
   return (
-    <Container className='w-75 pt-5'>
-      <h1 className='text-center'>Google Translate Clone</h1>
-      <Row className='mt-5'>
-        <Col>
-          <Stack gap={2}>
-            <LanguageSelector
-              type={SectionType.From}
-              value={fromLanguage}
-              onChange={setFromLanguage}
-            />
-            <TextArea
-              type={SectionType.From}
-              value={fromText}
-              onChange={setFromText}
-            />
-          </Stack>
-        </Col>
-        <Col xs='auto'>
-          <Button
-            variant='link'
-            onClick={() => {
-              interchangeLanguages()
-              interchangeText()
-            }}
-            disabled={fromLanguage === AUTO_LANGUAGE}
-          >
-            <ArrowsIcon />
-          </Button>
-        </Col>
-        <Col>
-          <Stack gap={2}>
-            <LanguageSelector
-              type={SectionType.To}
-              value={toLanguage}
-              onChange={setToLanguage}
-            />
-            <div className='clipboard-container'>
-              <TextArea
-                loading={loading}
-                type={SectionType.To}
-                value={result}
-                onChange={setResult}
+    <>
+      <Container className='w-75 pt-5'>
+        <h1 className='text-center'>Google Translate Clone</h1>
+        <Row className='mt-5'>
+          <Col>
+            <Stack gap={2}>
+              <LanguageSelector
+                type={SectionType.From}
+                value={fromLanguage}
+                onChange={setFromLanguage}
               />
-              <div className='icons'>
-                <Button variant='link' onClick={handleClipboard}>
-                  <ClipboardIcon />
-                </Button>
-                <Button variant='link' onClick={handleSpeak}>
-                  <SpeakerIcon />
-                </Button>
+
+              <TextArea
+                type={SectionType.From}
+                value={fromText}
+                onChange={setFromText}
+              />
+            </Stack>
+          </Col>
+          <Col xs='auto'>
+            <Button
+              variant='link'
+              onClick={() => {
+                interchangeLanguages()
+                interchangeText()
+              }}
+              disabled={fromLanguage === AUTO_LANGUAGE}
+            >
+              <ArrowsIcon />
+            </Button>
+          </Col>
+          <Col>
+            <Stack gap={2}>
+              <LanguageSelector
+                type={SectionType.To}
+                value={toLanguage}
+                onChange={setToLanguage}
+              />
+              <div className='icons-container'>
+                <TextArea
+                  loading={loading}
+                  type={SectionType.To}
+                  value={result}
+                  onChange={setResult}
+                />
+                <div className='icons'>
+                  <Button variant='link' onClick={handleClipboard}>
+                    <ClipboardIcon />
+                  </Button>
+                  <Button variant='link' onClick={handleSpeakTo}>
+                    <SpeakerIcon />
+                  </Button>
+                </div>
               </div>
-            </div>
-          </Stack>
-        </Col>
-      </Row>
-    </Container>
+            </Stack>
+          </Col>
+        </Row>
+      </Container>
+      <ToastContainer />
+    </>
   )
 }
 
