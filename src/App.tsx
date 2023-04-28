@@ -68,7 +68,9 @@ function App() {
   return (
     <>
       <Container className='w-75 pt-5'>
-        <h1 className='text-center'>Google Translate Clone</h1>
+        <h1 className='text-center'>
+          Google Translate Clone con Typescript y la API de Open IA
+        </h1>
         <Row className='mt-5'>
           <Col>
             <Stack gap={2}>
