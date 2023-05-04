@@ -1,16 +1,16 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useEffect } from 'react'
 import { Button, Col, Container, Row, Stack } from 'react-bootstrap'
-import { Slide, ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
 import './App.css'
 import { ArrowsIcon, ClipboardIcon, SpeakerIcon } from './components/Icons'
 import { LanguageSelector } from './components/LanguageSelector'
 import { TextArea } from './components/TextArea'
 import { AUTO_LANGUAGE, LANGUAGES_FOR_VOICES } from './constants'
+import { useClipboard } from './hooks/useClipboard'
 import { useDebounce } from './hooks/useDebounce'
 import { useStore } from './hooks/useStore'
-import { translate } from './services/translate'
 import { SectionType } from './types.d'
 
 function App() {
@@ -29,22 +29,7 @@ function App() {
   } = useStore()
 
   const debouncedFromText = useDebounce(fromText)
-
-  const handleClipboard = () => {
-    navigator.clipboard.writeText(result).catch(() => {})
-    toast('Traducción copiada', {
-      position: 'bottom-left',
-      autoClose: 2000,
-      pauseOnHover: false,
-      hideProgressBar: true,
-      theme: 'dark',
-      closeOnClick: true,
-      draggable: true,
-      type: 'default',
-      closeButton: false,
-      transition: Slide
-    })
-  }
+  const { handleClipboard } = useClipboard()
 
   const handleSpeakTo = () => {
     const utterance = new SpeechSynthesisUtterance(result)
@@ -52,17 +37,29 @@ function App() {
     speechSynthesis.speak(utterance)
   }
 
+  const fetchTranslation = async () => {
+    const baseUrl = import.meta.env.VITE_BASE_URL as string
+    const url = `${baseUrl}/api/translate`
+    const data = {
+      fromLanguage,
+      toLanguage,
+      text: debouncedFromText
+    }
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }
+    const response = await fetch(url, options)
+    const json = await response.json()
+    setResult(json.translation)
+  }
+
   useEffect(() => {
     if (debouncedFromText === '') return
-
-    translate({ fromLanguage, toLanguage, text: debouncedFromText })
-      .then(result => {
-        if (result == null) return
-        setResult(result)
-      })
-      .catch(() => {
-        setResult('Error')
-      })
+    fetchTranslation().catch(() => {})
   }, [debouncedFromText, fromLanguage, toLanguage])
 
   return (
@@ -114,7 +111,12 @@ function App() {
                   onChange={setResult}
                 />
                 <div className='icons'>
-                  <Button variant='link' onClick={handleClipboard}>
+                  <Button
+                    variant='link'
+                    onClick={() => {
+                      handleClipboard(result)
+                    }}
+                  >
                     <ClipboardIcon />
                   </Button>
                   <Button variant='link' onClick={handleSpeakTo}>
